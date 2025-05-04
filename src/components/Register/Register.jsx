@@ -1,24 +1,42 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { auth } from "../../../firebase.init";
+import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 
 const Register = () => {
-    const [errorMessage, setErrorMessage] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleRegister = (e) => {
     e.preventDefault();
     const email = e.target.email.value;
     const password = e.target.password.value;
-    
-    setErrorMessage('');
-    setSuccessMessage('');
+    const terms = e.target.terms.checked;
+    console.log('terms', terms);
+
+    setErrorMessage("");
+    setSuccessMessage("");
+
+    if(!terms){
+        setErrorMessage('Please select terms and conditions!');
+        return;
+    }
+
+    // password validate
+    const passwordRegExp = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/;
+    if (passwordRegExp.test(password) === false) {
+      setErrorMessage(
+        "Password must be more than 8 characters, including number, lowercase letter and uppercase letter!"
+      );
+      return;
+    }
 
     createUserWithEmailAndPassword(auth, email, password)
       .then((result) => {
         console.log("User Data: ", result);
-        if(result){
-            setSuccessMessage('User created successfully!');
+        if (result) {
+          setSuccessMessage("User created successfully!");
         }
       })
       .catch((error) => {
@@ -49,7 +67,7 @@ const Register = () => {
               <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
             </g>
           </svg>
-          <input type="email" name="email" placeholder="Email" required />
+          <input type="email" name="email" placeholder="Email" />
         </label>
 
         <br />
@@ -72,23 +90,34 @@ const Register = () => {
             </g>
           </svg>
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="password"
-            required
             placeholder="Password"
           />
+          <button
+            onClick={() => {
+              setShowPassword(!showPassword);
+            }}
+            className="cursor-pointer"
+          >
+            {showPassword ? <IoMdEyeOff /> : <IoMdEye />}
+          </button>
         </label>
 
         <br />
+
+        <div>
+          <label className="label">
+            <input type="checkbox" name="terms" className="checkbox" />
+            Accept terms and conditions.
+          </label>
+        </div>
+
         {/* Submit button */}
         <input className="btn btn-primary" type="submit" value="Submit" />
       </form>
-      {
-        successMessage && <p className="text-green-500">{successMessage}</p>
-      }
-      {
-        errorMessage && <p className="text-red-500">{errorMessage}</p>
-      }
+      {successMessage && <p className="text-green-500">{successMessage}</p>}
+      {errorMessage && <p className="text-red-500">{errorMessage}</p>}
     </div>
   );
 };
