@@ -1,4 +1,7 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
 import React, { useState } from "react";
 import { auth } from "../../../firebase.init";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
@@ -37,7 +40,10 @@ const Register = () => {
       .then((result) => {
         console.log("User Data: ", result);
         if (result) {
-          setSuccessMessage("User created successfully!");
+          // sent email verify mail
+          sendEmailVerification(auth.currentUser).then(() => {
+            setSuccessMessage("User created successfully!");
+          });
         }
       })
       .catch((error) => {
@@ -48,7 +54,9 @@ const Register = () => {
   return (
     <div className="max-w-sm mx-auto mt-12">
       <h2 className="text-2xl font-bold mb-4">Create an Account</h2>
-      {successMessage && <p className="text-green-500 mb-3 font-bold">{successMessage}</p>}
+      {successMessage && (
+        <p className="text-green-500 mb-3 font-bold">{successMessage}</p>
+      )}
       <form className="space-y-4" onSubmit={handleRegister}>
         {/* Email field */}
 
@@ -115,7 +123,9 @@ const Register = () => {
           </label>
         </div>
 
-        {errorMessage && <p className="text-red-500 font-bold">{errorMessage}</p>}
+        {errorMessage && (
+          <p className="text-red-500 font-bold">{errorMessage}</p>
+        )}
         {/* Submit button */}
         <input className="btn btn-primary" type="submit" value="Submit" />
       </form>
