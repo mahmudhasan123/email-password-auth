@@ -2,6 +2,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import { auth } from "../../../firebase.init";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
+import { Link } from "react-router";
 
 const Register = () => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -13,14 +14,14 @@ const Register = () => {
     const email = e.target.email.value;
     const password = e.target.password.value;
     const terms = e.target.terms.checked;
-    console.log('terms', terms);
+    console.log("terms", terms);
 
     setErrorMessage("");
     setSuccessMessage("");
 
-    if(!terms){
-        setErrorMessage('Please select terms and conditions!');
-        return;
+    if (!terms) {
+      setErrorMessage("Please select terms and conditions!");
+      return;
     }
 
     // password validate
@@ -47,6 +48,7 @@ const Register = () => {
   return (
     <div className="max-w-sm mx-auto mt-12">
       <h2 className="text-2xl font-bold mb-4">Create an Account</h2>
+      {successMessage && <p className="text-green-500 mb-3 font-bold">{successMessage}</p>}
       <form className="space-y-4" onSubmit={handleRegister}>
         {/* Email field */}
 
@@ -113,11 +115,16 @@ const Register = () => {
           </label>
         </div>
 
+        {errorMessage && <p className="text-red-500 font-bold">{errorMessage}</p>}
         {/* Submit button */}
         <input className="btn btn-primary" type="submit" value="Submit" />
       </form>
-      {successMessage && <p className="text-green-500">{successMessage}</p>}
-      {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+      <p className="pt-2">
+        Already have an account? Please{" "}
+        <Link className="text-blue-500 underline font-bold" to="/login">
+          Login!
+        </Link>
+      </p>
     </div>
   );
 };
